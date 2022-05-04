@@ -1,5 +1,6 @@
 const express = require('express');
 const server = express();
+server.use(express.json());
 
 const projectsRouter = require('./projects/projects-router');
 const actionsRouter = require('./actions/actions-router');
@@ -12,16 +13,17 @@ server.use('/api/actions', actionsRouter);
 // Build your projects router in /api/projects/projects-router.js
 // Do NOT `server.listen()` inside this file!
 
-server.use(express.json());
-
-server.get('/', (req, res) => {
-    res.send('Servers Working!');
-})
 
 server.use('*', (req, res) => {
-    // catch all 404 errors middleware
-    res.status(404).json({ message: `${req.method} ${req.baseUrl} not found!` });
+  res.json({ api: 'up' })
+});
+
+server.use((err, req, res, next) => {
+  res.status(err.status).json({
+      customMessage: 'something went wrong in router',
+      message: err.message,
+      stack: err.stack
   });
-  
+});
 
 module.exports = server;

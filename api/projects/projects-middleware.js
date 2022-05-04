@@ -12,7 +12,7 @@ async function validateProjectId(req, res, next) {
             next({ status: 404, message: "No project found" })
         }
     } catch (err) {
-        next
+        next(err)
     }
 }
 
@@ -23,17 +23,36 @@ function validateProject(req, res, next) {
             res.status(400).json({
                 message: "missing required info"
             })
+            next()
         } else {
             next()
         }
     }
     catch (err) {
-        console.log(err)
+        next(err)
     }
 }
 
+function validateProjectUpdate(req, res, next) {
+    try {
+        const { name, description, completed } = req.body
+        console.log(req.body)
+        if (!name || !description || completed === undefined) {
+            res.status(400).json({
+                message: "missing required info"
+            })
+            next()
+        } else {
+            next()
+        }
+    }
+    catch (err) {
+        next(err)
+    }
+}
 
 module.exports = {
     validateProjectId,
     validateProject,
+    validateProjectUpdate
 }

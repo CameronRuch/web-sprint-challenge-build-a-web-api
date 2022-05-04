@@ -14,7 +14,7 @@ async function validateActionId(req, res, next) {
             })
         }
     } catch (err) {
-        next
+        next(err)
     }
 }
 async function validateAction(req, res, next) {

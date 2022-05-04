@@ -4,6 +4,7 @@ const express = require('express');
 const {
     validateProjectId,
     validateProject,
+    validateProjectUpdate
 } = require('./projects-middleware')
 
 const Projects = require('./projects-model');
@@ -21,7 +22,7 @@ router.get('/:id', validateProjectId, (req, res) => {
     res.json(req.project)
 })
 
-router.post('/', validateProjectId, (req, res, next) => {
+router.post('/', validateProjectId, validateProject, (req, res, next) => {
     Projects.insert(req.body)
         .then(newProject => {
             res.status(201).json(newProject)
@@ -29,7 +30,7 @@ router.post('/', validateProjectId, (req, res, next) => {
         .catch(next)
 })
 
-router.put('/:id', validateProjectId, validateProject, (req, res, next) => {
+router.put('/:id', validateProjectId, validateProjectUpdate, (req, res, next) => {
     Projects.update(req.params.id, req.body)
         .then(() => {
             return Projects.get(req.params.id)
@@ -59,12 +60,5 @@ router.get('/:id/actions', validateProjectId, async (req, res, next) => {
     next()
 })
 
-router.use((err, req, res, next) => {
-    res.status(err.status || 500).json({
-        customMessage: 'something died in posts router my guy',
-        message: err.message,
-        stack: err.stack,
-    })
-})
 
 module.exports = router;
